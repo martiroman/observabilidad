@@ -6,15 +6,18 @@ Este es un breve ejemplo de cómo aplicar Machine Learning a métricas en format
 
    **Observabilidad** es la capacidad de medir el estado actual de un sistema basándose en los datos que este genera (logs, trazas, métricas, eventos)
 
+Existen herramientas OpenSource para observabilidad muy populares como Prometheus, Nagios, Grafana, Kibana, Jaeger que ofrecen gran flexibilidad y customización.
+
 
    **Machine learning** es una rama de la inteligencia artificial cuyo principal objetivo es tomar decisiones o realizar predicciones basadas en datos.
+
+Python es el lenguaje por excelencia para ML. Es un lenguaje eficiente, fácil de aprender y multiplataforma, entre otras características.
+
 
 Nuestro objetivo será obtener datos de una fuente, agregarlos de una manera que nos permita hacer una evaluación del estado actual de nuestros sistemas e indentificar patrones, tendencias y anomalías con el fin de anticiparnos a problemas que afecten el rendimiento del mismo.
 
 Por ejemplo, entender el comportamiento del consumo de CPU de un servidor a lo largo del tiempo o proyectar la ocupación de una LUN de un storage.
 
-Existen herramientas OpenSource para observabilidad muy populares como Prometheus, Nagios, Grafana, Kibana, Jaeger que ofrecen gran flexibilidad y customización.
-Por otro lado, python es el lenguaje por excelencia para ML. Es un lenguaje eficiente, fácil de aprender y multiplataforma, entre otras características.
 
 En nuestro ejercicio utilizaremos:
 Prometheus: https://prometheus.io/<br>Grafana: https://grafana.com/<br>Python: https://www.python.org/
@@ -90,6 +93,9 @@ Nos valdremos de las funciones del Dataframe de la librería Pandas de Python
 
     # Hacemos un re-muestreo de los datos. Promedio por hora
     df = df.resample('H').mean()
+
+    # Normalizacion de datos. Por ejemplo convertirlos a GB
+    df['value'] = df['value'] / 1024 / 1024 / 1024
 
     # Dividimos nuestros datos para entrenar y prueba
     df_train, df_test = split_df_data(df)
