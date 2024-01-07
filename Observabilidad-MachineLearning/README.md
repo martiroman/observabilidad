@@ -1,26 +1,30 @@
-# Observabilidad y Machine Learning
+# Observabilidad y Machine Learning - Parte I
 
-## Consideraciones iniciales
+Este es un breve ejemplo de cómo aplicar Machine Learning a métricas en formato Timeseries para estimar su comportamiento.
+
+### Introducción
 
    **Observabilidad** es la capacidad de medir el estado actual de un sistema basándose en los datos que este genera (logs, trazas, métricas, eventos)
 
 
    **Machine learning** es una rama de la inteligencia artificial cuyo principal objetivo es tomar decisiones o realizar predicciones basadas en datos.
 
-Nuestro objetivo será obtener datos de alguna forma y agregarlos de una manera que nos permita hacer una evaluación del estado actual de nuestros sistemas e indentificar patrones, tendencias y anomalías con el fin de anticiparnos a problemas que afecten el rendimiento del mismo.
+Nuestro objetivo será obtener datos de una fuente, agregarlos de una manera que nos permita hacer una evaluación del estado actual de nuestros sistemas e indentificar patrones, tendencias y anomalías con el fin de anticiparnos a problemas que afecten el rendimiento del mismo.
 
 Por ejemplo, entender el comportamiento del consumo de CPU de un servidor a lo largo del tiempo o proyectar la ocupación de una LUN de un storage.
 
-Existen herramientas OpenSource para observabilidad muy populares como Prometheus, Grafana, Jaeger que ofrecen gran flexibilidad y customización.
+Existen herramientas OpenSource para observabilidad muy populares como Prometheus, Nagios, Grafana, Kibana, Jaeger que ofrecen gran flexibilidad y customización.
 Por otro lado, python es el lenguaje por excelencia para ML. Es un lenguaje eficiente, fácil de aprender y multiplataforma, entre otras características.
 
+En nuestro ejercicio utilizaremos:
 Prometheus: https://prometheus.io/<br>Grafana: https://grafana.com/<br>Python: https://www.python.org/
+
 
 ---
 ## 1. Adquisición de Datos
-Los datos son fundamentales en el aprendizaje automático ya que los algoritmos aprenden patrones a partir de ellos.
+Los datos son fundamentales en ML ya que los algoritmos aprenden patrones a partir de ellos. 
+Nuestra fuente será *Prometheus*. Con esta herramienta tendremos acceso a métricas en formato timeseries identificadas por nombre y etiquetas. 
 
-Con Prometheus tendremos acceso a métricas en formato timeseries, identificadas por nombre y etiquetas.
 
 Tipos de métricas que podemos encontrar:
 * Counter: Métrica acumulativa que representa un contador, es decir que solo puede incrementar o reiniciarse a cero.
@@ -34,11 +38,12 @@ Doc: https://prometheus.io/docs/concepts/metric_types/.
 
 #### Cómo obtener métricas de Prometheus
 
-Utilizaremos la librería de Python "prometheus-api-client" https://pypi.org/project/prometheus-api-client/
+Utilizaremos la librería de Python "prometheus-api-client" 
+https://pypi.org/project/prometheus-api-client/
 
     > pip install prometheus-api-client
 
-En este ejemplo consultamos el uso de CPU del container "argocd-server"
+En este ejemplo consultamos el uso de CPU del container "argocd-server" y creamos un Dataframe de Pandas
 
     from prometheus_api_client import PrometheusConnect,  MetricSnapshotDataFrame, MetricRangeDataFrame
     import datetime as dt
@@ -58,9 +63,13 @@ En este ejemplo consultamos el uso de CPU del container "argocd-server"
     df.head()
 
 ---
-## 2. Preparar los datos - Preprocesamiento y exploracion
+## 2. Inspección y preparación de los datos
 
-Ya tenemos nuestros datos en un dataframe, si lo imprimimos podremos observar varios campos que no son de nuestro interés (los labels de la métrica en Prometheus) y podremos prescindir de ellos.
+Ya adquirimos nuestros datos y están almacenados en un dataframe, el siguiente paso es inspeccionarlos con el objetivo de verificar su integridad.
+Este paso es importante ya que la calidad de los datos determinará la eficacia de nuestro modelo.
+Verificaremos si el DF tiene un identificador único, que no existan datos nulos, el formato de los valores y cualquier anomalía que podamos detectar. 
+
+Si imprimimos el DF podremos observar varios campos que no son de nuestro interés (los labels de la métrica en Prometheus) y podremos prescindir de ellos.
 Además deberemos tomar una desición acerca del muestreo que utilizaremos. Si usamos la configuración de Prometheus por defecto, tendremos un punto métrico por minuto. La cantidad de datos que emplearemos dependerá de la capacidad de procesamiento de nuestra infraestructura (ya sea una notebook o un servidor). Por lo tanto, será necesario determinar si es necesario realizar un "re muestreo" de nuestros datos y cómo se llevará a cabo la agregación.
 Por ejemplo, una estrategia podría ser agrupar los datos en intervalos de 30 minutos y calcular el promedio correspondiente.
 
@@ -75,7 +84,7 @@ Una proporción efectiva para comenzar es asignar el 80% de los datos al conjunt
 
 Nos valdremos de las funciones del Dataframe de la librería Pandas de Python
 
-    # Seleccionamos las columnas que necesitamos para el analisis
+    # Seleccionamos las columnas que necesitamos para el analisis y seteamos un indice
     df = df_prom[['value']].copy()
     df = df.set_index(df_prom.index)
 
@@ -87,7 +96,7 @@ Nos valdremos de las funciones del Dataframe de la librería Pandas de Python
 
     # ver la funcion split_df_data en la notebook
 ---
-## 3. El modelo ARIMA
+## 3. Modelado
 
 El próximo paso es seleccionar un modelo estadístico que se ajuste a nuestra necesidad. 
 
@@ -137,6 +146,11 @@ Utilizaremos la librería matplotlib de python para graficar los datos históric
 ---
 ## 5. Próximos pasos
 
+Hasta aquí hemos conseguido obtener los datos, entrenar un modelo y graficar los resultados.
+Las preguntas que nos debemos hacer en este punto: ¿Qué tan confiable es nuestro modelo? ¿Qué decisiones podemos tomar a partir de los datos obtenidos? ¿Cómo podemos automatizar las acciones a partir de estos datos?
+
+En la segunda parte desarrollaremos:
+
  - Evaluación del modelo
- - Almacenado de datos obtenidos
+ - Almacenado de las estimaciones y alertado
  - Visualización en Grafana
