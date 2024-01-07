@@ -1,5 +1,5 @@
-# Observabilidad y Machine Learning - Parte I
-
+# Timeseries Forecasting - Parte I
+## Observabilidad y Machine Learning 
 Este es un breve ejemplo de cómo aplicar Machine Learning a métricas en formato Timeseries para estimar su comportamiento.
 
 ### Introducción
@@ -106,8 +106,26 @@ Utilizaremos SARIMAX, una extensión del modelo que considera factores externos 
 
 Doc: https://www.statsmodels.org/dev/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.html
 
+#### Seleccionar los parámetros para el modelo ARIMA
+Existen distintos métodos para obtener una correcta parametrización del modelo: SARIMAX(p,d,q)(P,D,Q)m
+
+    P: Número de términos autorregresivos estacionales.
+    D: Orden de diferenciación estacional.
+    Q: Número de términos de media móvil estacionales.
+    m: Longitud del ciclo estacional.
+
+Se explicarán mas adelante en la segunda parte, cuando evaluemos el modelo. Ahora podemos probar algunos valores al azar y ver con la gráfica su comportamiento.
+
+Ejemplos:
+
+    order(0, 1, 1) seasonal_order(0, 1, 1, 12) | AIC: 188.95410490578703
+    order(1, 1, 0) seasonal_order(0, 1, 1, 12) | AIC: 188.9630661935481
+    order(0, 1, 0) seasonal_order(0, 1, 1, 12) | AIC: 187.2018820480008
 
 #### Cómo utilizar el modelo ARIMA
+    > pip install statsmodels
+
+Ejemplo de uso
 
     from statsmodels.tsa.statespace.sarimax import SARIMAX
 
@@ -134,7 +152,6 @@ Utilizaremos la librería matplotlib de python para graficar los datos históric
         confidence_intervals['upper value'],  # Límite superior del intervalo
         color='pink', alpha=0.3, label='Intervalo de Confianza'
     )
-
 
     plt.xlabel('Fecha')
     plt.ylabel(query)
