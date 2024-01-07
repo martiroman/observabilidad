@@ -107,14 +107,16 @@ Utilizaremos SARIMAX, una extensión del modelo que considera factores externos 
 Doc: https://www.statsmodels.org/dev/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.html
 
 #### Seleccionar los parámetros para el modelo ARIMA
-Existen distintos métodos para obtener una correcta parametrización del modelo: SARIMAX(p,d,q)(P,D,Q)m
+Existen distintos métodos para obtener una correcta parametrización del modelo que se explicarán mas adelante, en la segunda parte, cuando evaluemos el modelo.
+
+SARIMAX(p,d,q)(P,D,Q)m
 
     P: Número de términos autorregresivos estacionales.
     D: Orden de diferenciación estacional.
     Q: Número de términos de media móvil estacionales.
     m: Longitud del ciclo estacional.
 
-Se explicarán mas adelante en la segunda parte, cuando evaluemos el modelo. Ahora podemos probar algunos valores al azar y ver con la gráfica su comportamiento.
+ Ahora podemos probar algunos valores al azar y ver con la gráfica su comportamiento.
 
 Ejemplos:
 
