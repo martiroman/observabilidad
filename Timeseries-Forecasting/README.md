@@ -1,6 +1,6 @@
 # Timeseries Forecasting - Parte I
 ## Observabilidad y Machine Learning 
-Este es un breve ejemplo de cómo aplicar Machine Learning a métricas en formato Timeseries para estimar su comportamiento.
+Este es un breve ejemplo de cómo aplicar Machine Learning a métricas en formato Timeseries para estimar su comportamiento futuro.
 
 ### Introducción
 
@@ -27,7 +27,7 @@ Prometheus: https://prometheus.io/<br>Grafana: https://grafana.com/<br>Python: h
 ## 1. Adquisición de Datos
 Los datos son fundamentales en ML ya que los algoritmos aprenden patrones a partir de ellos. 
 Nuestra fuente será *Prometheus*. Con esta herramienta tendremos acceso a métricas en formato timeseries identificadas por nombre y etiquetas. 
-
+La interfaz de prometheus nos permite explorar las métricas que está recolectando de manera muy simple.
 
 Tipos de métricas que podemos encontrar:
 * Counter: Métrica acumulativa que representa un contador, es decir que solo puede incrementar o reiniciarse a cero.
@@ -35,11 +35,9 @@ Tipos de métricas que podemos encontrar:
 * Histogram: Tiene la función de muestrear las observaciones y las cuentas en categorías configurables, además de ofrecer una suma de la totalidad de los valores que haya observado.
 * Summary: Similar a un histograma, un resumen de muestras.
     
-Doc: https://prometheus.io/docs/concepts/metric_types/.
 
 
-
-#### Cómo obtener métricas de Prometheus
+#### Cómo obtener métricas de Prometheus con python
 
 Utilizaremos la librería de Python "prometheus-api-client" 
 https://pypi.org/project/prometheus-api-client/
@@ -73,7 +71,7 @@ Este paso es importante ya que la calidad de los datos determinará la eficacia 
 Verificaremos si el DF tiene un identificador único, que no existan datos nulos, el formato de los valores y cualquier anomalía que podamos detectar. 
 
 Si imprimimos el DF podremos observar varios campos que no son de nuestro interés (los labels de la métrica en Prometheus) y podremos prescindir de ellos.
-Además deberemos tomar una desición acerca del muestreo que utilizaremos. Si usamos la configuración de Prometheus por defecto, tendremos un punto métrico por minuto. La cantidad de datos que emplearemos dependerá de la capacidad de procesamiento de nuestra infraestructura (ya sea una notebook o un servidor). Por lo tanto, será necesario determinar si es necesario realizar un "re muestreo" de nuestros datos y cómo se llevará a cabo la agregación.
+Además deberemos tomar una desición acerca del muestreo que utilizaremos. Si usamos la configuración de Prometheus por defecto, tendremos un punto métrico por minuto. La cantidad de datos que emplearemos dependerá de la capacidad de procesamiento de nuestra infraestructura. Por lo tanto, será necesario determinar si es necesario realizar un "re muestreo" de nuestros datos y cómo se llevará a cabo la agregación.
 Por ejemplo, una estrategia podría ser agrupar los datos en intervalos de 30 minutos y calcular el promedio correspondiente.
 
 Una vez que el dataframe está preparado, procederemos a dividir los datos en dos conjuntos:
@@ -83,7 +81,7 @@ Una vez que el dataframe está preparado, procederemos a dividir los datos en do
 
 Una proporción efectiva para comenzar es asignar el 80% de los datos al conjunto de entrenamiento y reservar el 20% restante para pruebas.
 
-#### Cómo preparamos los datos
+#### Cómo preparamos los datos en python
 
 Nos valdremos de las funciones del Dataframe de la librería Pandas de Python
 
@@ -97,23 +95,23 @@ Nos valdremos de las funciones del Dataframe de la librería Pandas de Python
     # Normalizacion de datos. Por ejemplo convertirlos a GB
     df['value'] = df['value'] / 1024 / 1024 / 1024
 
-    # Dividimos nuestros datos para entrenar y prueba
-    df_train, df_test = split_df_data(df)
-
-    # ver la funcion split_df_data en la notebook
+    # Dividir el DF (Metrics Timeseries) en datos de entrenamiento y de test
+    ratio = 0.2
+    size = int(len(df) * (1-float(ratio)))
+    df_train, df_test = df[0:size], df[size:len(df)]
 ---
 ## 3. Modelado
 
 El próximo paso es seleccionar un modelo estadístico que se ajuste a nuestra necesidad. 
 
-ARIMA (Autoregressive Integrated Moving Average) es un modelo estadístico utilizado para analizar y predecir series temporales. Puede ser ajustado a datos históricos para hacer predicciones a futuro, lo que lo hace valioso en pronósticos económicos, análisis de ventas, predicción de precios de acciones, entre otros campos.
+ARIMA (Autoregressive Integrated Moving Average) es un modelo estadístico utilizado para analizar y predecir series temporales. Puede ser ajustado a datos históricos para hacer predicciones a futuro, lo que lo hace valioso en pronósticos de variables en distintas disciplinas.
 
 Utilizaremos SARIMAX, una extensión del modelo que considera factores externos o variables exógenas.
 
 Doc: https://www.statsmodels.org/dev/generated/statsmodels.tsa.statespace.sarimax.SARIMAX.html
 
 #### Seleccionar los parámetros para el modelo ARIMA
-Existen distintos métodos para obtener una correcta parametrización del modelo que se explicarán mas adelante, en la segunda parte, cuando evaluemos el modelo.
+Existen distintos métodos para obtener una correcta parametrización del modelo que se explicarán mas adelante, en la segunda parte, cuando realicemos la evaluación.
 
 SARIMAX(p,d,q)(P,D,Q)m
 
@@ -130,7 +128,7 @@ Ejemplos:
     order(1, 1, 0) seasonal_order(0, 1, 1, 12) | AIC: 188.9630661935481
     order(0, 1, 0) seasonal_order(0, 1, 1, 12) | AIC: 187.2018820480008
 
-#### Cómo utilizar el modelo ARIMA
+#### Cómo utilizar el modelo SARIMAX en python
     > pip install statsmodels
 
 Ejemplo de uso
