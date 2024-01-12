@@ -26,7 +26,7 @@ Prometheus: https://prometheus.io/<br>Grafana: https://grafana.com/<br>Python: h
 ---
 ## 1. Adquisición de Datos
 Los datos son fundamentales en ML ya que los algoritmos aprenden patrones a partir de ellos. 
-Nuestra fuente será *Prometheus*. Con esta herramienta tendremos acceso a métricas en formato timeseries identificadas por nombre y etiquetas. 
+Nuestra fuente será [Prometheus](https://prometheus.io/). Con esta herramienta tendremos acceso a métricas en formato timeseries identificadas por nombre y etiquetas. 
 La interfaz de prometheus nos permite explorar las métricas que está recolectando de manera muy simple.
 
 Tipos de métricas que podemos encontrar:
