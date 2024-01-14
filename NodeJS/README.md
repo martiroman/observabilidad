@@ -30,12 +30,14 @@ Declarar el uso de la librería en la aplicación
 
 Incluir las métricas por defecto para NodeJS.
 Podremos obtener datos sobre:
-    - NodeJS Version
-    - Active requests
-    - Active Handles
-    - % CPU usage
-    - Event loop lag
-    - Memory: External memory, Process memory, Heap space size,
+* NodeJS Version
+* Active requests
+* Active Handles
+* % CPU usage
+* Event loop lag
+* Memory: External memory, Process memory, Heap space size,
+
+Incluir las siguientes líneas, podemos indicar un prefijo para indentificar las métricas en la herramienta de observabilidad:
 
     const collectDefaultMetrics = prom.collectDefaultMetrics;
 
