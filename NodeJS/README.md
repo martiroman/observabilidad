@@ -1,6 +1,6 @@
 
 ## Observabilidad en NodeJS
-La adopción de medidas de observabilidad puede proporcionar múltiples ventajas incluyendo una mejor capacidad para resolver problemas y una disminución en el tiempo de respuesta frente a incidentes. Es clave para comprender los problemas en los sistemas distribuidos.
+La adopción de observabilidad en software proporciona múltiples ventajas incluyendo una mejor capacidad para resolver problemas y una disminución en el tiempo de respuesta frente a incidentes en producción, también es fundamental su implementación en pipelines de CI/CD dado su creciente complejidad.
 
 En este ejemplo veremos cómo recopilar información en una aplicación NodeJS para cada uno de los pilares de la observabilidad:
 
@@ -10,6 +10,10 @@ En este ejemplo veremos cómo recopilar información en una aplicación NodeJS p
 
 
 ### 1. Métricas 
+
+Time Series
+
+Es una secuencia de data points numéricos con un orden temporal 
 
 #### Prometheus: Librería Prom-Client
 
@@ -57,7 +61,7 @@ Definir una métrica custom de tipo contador:
 
 #### Dynatrace: Cómo colectar métricas de Prometheus
 
-El operador de Kubernetes incluye una función para colectar métricas de Prometheus en Dynatrace. De esta manera podremos construir SLO, dashboards y detectar anomalías con los datos obtenidos.
+El operador de Kubernetes incluye una función para colectar métricas de Prometheus en Dynatrace. De esta manera podremos construir SLO, dashboards y detectar anomalías con los datos obtenidos a través de las métricas de Prometheus.
 
 Para habilitar esta función simplemente deberemos incluir las anotaciones en nuestros pods. En este ejemplo utilizamos una anotación para filtrar algunas métricas específicas que nos interesa ingestar. 
 
@@ -75,9 +79,58 @@ Para habilitar esta función simplemente deberemos incluir las anotaciones en nu
                 ]
           }
 
+### 2. Trazas
+
+### Instrumentación de Opentelemetry
+
+https://opentelemetry.io/
+
+Instalar la librería Opentelemetry para NodeJS
+
+    npm install @opentelemetry/sdk-node \
+    @opentelemetry/api \
+    @opentelemetry/auto-instrumentations-node \
+    @opentelemetry/sdk-metrics \
+    @opentelemetry/sdk-trace-node
+
+La configuración de la instrumentación debe ejecutarse antes del código de la aplicación.
+
+Crear un archivo instrumentation.ts
+
+    // Require dependencies
+    const { NodeSDK } = require('@opentelemetry/sdk-node');
+    const { ConsoleSpanExporter } = require('@opentelemetry/sdk-trace-node');
+    const {
+    getNodeAutoInstrumentations,
+    } = require('@opentelemetry/auto-instrumentations-node');
+    const {
+    PeriodicExportingMetricReader,
+    ConsoleMetricExporter,
+    } = require('@opentelemetry/sdk-metrics');
+
+    const sdk = new NodeSDK({
+    traceExporter: new ConsoleSpanExporter(),
+    metricReader: new PeriodicExportingMetricReader({
+        exporter: new ConsoleMetricExporter(),
+    }),
+    instrumentations: [getNodeAutoInstrumentations()],
+    });
+
+    sdk.start();
+
+
+
 ##Próximos pasos:
-### 2. Logs
-### 3. Metricas
+# Debug trazas
+
+kubectl apply -f instrumentation.yaml
+
+kubectl get instrumentation -n test-nodejs-app
+
+kubectl get events -n test-nodejs-app
+
+
+### 3. Logs
 
 
 
