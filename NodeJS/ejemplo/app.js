@@ -4,8 +4,6 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
-// OTEL implementation
-require("./instrumentation.js");
 
 const indexRouter = require("./routes/index");
 const productoRouter = require("./routes/producto");

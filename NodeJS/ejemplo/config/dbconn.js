@@ -3,7 +3,7 @@
 const mongoose = require("mongoose");
 
 mongoose
-  .connect(`mongodb://tiendapc-svc.test-nodejs-app:27017/mitienda`)
+  .connect(`mongodb://tiendapc-db.test-nodejs-app:27017/mitienda`)
   .then(() => {
     console.log("Conectado a la DB mitienda");
   })

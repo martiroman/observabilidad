@@ -11,7 +11,8 @@ spec:
     - b3
   sampler:
     type: parentbased_traceidratio
-    argument: "0.25"
+    #0.25
+    argument: "1" 
   python:
     env:
       # Required if endpoint is set to 4317.

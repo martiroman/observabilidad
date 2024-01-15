@@ -1,9 +1,15 @@
 FROM public.ecr.aws/docker/library/node:21-alpine3.18
-#COPY --from=dqk02008.live.dynatrace.com/linux/oneagent-codemodules-musl:nodejs / /
-#ENV LD_PRELOAD /opt/dynatrace/oneagent/agent/lib64/liboneagentproc.so
-WORKDIR /app
-COPY package*.json  ./
+# Create app directory
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+# Install app dependencies
+COPY package.json /usr/src/app/
 RUN npm install
-COPY . .
+
+# Bundle app source
+COPY . /usr/src/app
+
 EXPOSE 3000
-CMD ["node", "./bin/www"]
+
+# Run app
+CMD [ "npm", "start" ]
