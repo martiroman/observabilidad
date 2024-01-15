@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node -r ./otel-tracing.js ./bin/www"
+    "start": "node ./bin/www"
   },
   "dependencies": {
     "@opentelemetry/api": "^1.7.0",
