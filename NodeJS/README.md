@@ -86,7 +86,14 @@ https://opentelemetry.io/
 Instalar la librería Opentelemetry para NodeJS
 
     npm install @opentelemetry/sdk-node \
-    @opentelemetry/auto-instrumentations-node
+    @opentelemetry/api \
+    @opentelemetry/auto-instrumentations-node \
+    @opentelemetry/sdk-metrics \
+    @opentelemetry/sdk-trace-node
+
+
+Librerías de instrumentación para Express:
+    npm install --save @opentelemetry/instrumentation-http @opentelemetry/instrumentation-express
 
 La configuración de la instrumentación debe ejecutarse antes del código de la aplicación.
 
