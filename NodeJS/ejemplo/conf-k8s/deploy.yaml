@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tiendapc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tiendapc
+  template:
+    metadata:
+      labels:
+        app: tiendapc
+        app.kubernetes.io/name: tiendapc
+        app.kubernetes.io/component: service
+        app.kubernetes.io/part-of: tiendapc
+        app.kubernetes.io/version: 0.0.28
+        app.kubernetes.io/build-version: "2.1"
+      annotations:
+        instrumentation.opentelemetry.io/inject-nodejs: "true"
+        #metrics.dynatrace.com/scrape: 'true'
+        #metrics.dynatrace.com/path: '/metrics'
+        #metrics.dynatrace.com/port: '3000'
+        #metrics.dynatrace.com/secure: 'false'
+        #metrics.dynatrace.com/filter: |
+        #  {
+        #    "mode": "include",
+        #    "names": [
+        #        "tiendapc_number_of_hit_total*",
+        #        "tiendapc_process_heap_bytes"
+        #        ]
+        #  }
+    spec:
+      containers:
+        - name: tiendapc
+          image: mnroman/tiendapc
+          ports:
+            - containerPort: 3000
+          env:
+          - name: DT_CUSTOM_PROP
+            value: "buildVersion=0.0.4"
+          - name: "DT_RELEASE_VERSION"
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.labels['app.kubernetes.io/version']
+          - name: "DT_RELEASE_PRODUCT"
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.labels['app.kubernetes.io/part-of']
+          - name: "DT_BUILD_VERSION"
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.labels['app.kubernetes.io/build-version']
+
+          imagePullPolicy: Always
+      imagePullSecrets:
+      - name: regcred

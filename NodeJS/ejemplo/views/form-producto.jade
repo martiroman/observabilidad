@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  h1= title
+  p NodeJS Test
+
+  h2 Producto
+
+  form(action="/producto", method="post")
+    label(for="nombre") Nombre del Producto:
+    input(type="text", name="nombre", required)
+
+    label(for="precio") Precio:
+    input(type="number", name="precio", required)
+
+    label(for="categoria") Categoría:
+    select(name="categoria", required)
+      // Opciones de categoría se llenarán dinámicamente desde /categoria
+      option(value="", disabled, selected) Seleccionar categoría
+
+    button(type="submit") Guardar Producto

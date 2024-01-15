@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tiendapc-svc
+  labels:
+    app.kubernetes.io/app: tiendapc
+spec:
+  selector:
+    app: tiendapc
+  ports:
+    - port: 80
+      targetPort: 3000
+      name: frontend
+  type: ClusterIP

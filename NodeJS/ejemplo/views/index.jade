@@ -1,0 +1,28 @@
+extends layout
+
+block content
+  h1= title
+  p NodeJS Test
+
+  div(id="productos-container")
+
+  script.
+    // Utilizando fetch para obtener los productos
+    fetch('/producto')
+      .then(response => response.json())
+      .then(data => {
+        // Manipular los datos obtenidos, por ejemplo, mostrarlos en la página
+        const productosContainer = document.getElementById('productos-container');
+        productosContainer.innerHTML = '<h2>Productos Disponibles:</h2>';
+
+        // Crear una lista para mostrar los productos
+        const ul = document.createElement('ul');
+        data.forEach(producto => {
+          const li = document.createElement('li');
+          li.textContent = `${producto.nombre} - ${producto.precio}`;
+          ul.appendChild(li);
+        });
+
+        productosContainer.appendChild(ul);
+      })
+      .catch(error => console.error('Error al obtener productos:', error));

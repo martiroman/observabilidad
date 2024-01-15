@@ -92,7 +92,6 @@ Instalar la librería Opentelemetry para NodeJS
     npm install @opentelemetry/sdk-node \
     @opentelemetry/api \
     @opentelemetry/auto-instrumentations-node \
-    @opentelemetry/sdk-metrics \
     @opentelemetry/sdk-trace-node
 
 La configuración de la instrumentación debe ejecutarse antes del código de la aplicación.
@@ -105,21 +104,13 @@ Crear un archivo instrumentation.ts
     const {
     getNodeAutoInstrumentations,
     } = require('@opentelemetry/auto-instrumentations-node');
-    const {
-    PeriodicExportingMetricReader,
-    ConsoleMetricExporter,
-    } = require('@opentelemetry/sdk-metrics');
 
     const sdk = new NodeSDK({
     traceExporter: new ConsoleSpanExporter(),
-    metricReader: new PeriodicExportingMetricReader({
-        exporter: new ConsoleMetricExporter(),
-    }),
     instrumentations: [getNodeAutoInstrumentations()],
     });
 
     sdk.start();
-
 
 
 ##Próximos pasos:
@@ -130,6 +121,11 @@ kubectl apply -f instrumentation.yaml
 kubectl get instrumentation -n test-nodejs-app
 
 kubectl get events -n test-nodejs-app
+
+#
+Enrich your instrumentation generated automatically with manual instrumentation of your own codebase. This gets you customized observability data.
+
+## Send to dynatrace
 
 
 ### 3. Logs
