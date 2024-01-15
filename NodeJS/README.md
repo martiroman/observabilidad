@@ -72,12 +72,13 @@ Para habilitar esta función simplemente deberemos incluir las anotaciones en nu
           {
             "mode": "include",
             "names": [
-                "miapp_process_heap_bytes",
                 "miapp_number_of_hits_total"
                 ]
           }
 
 ### 2. Trazas
+
+Alternativas:
 
 ### Instrumentación de Opentelemetry
 
@@ -92,12 +93,11 @@ Instalar la librería Opentelemetry para NodeJS
     @opentelemetry/sdk-trace-node
 
 
-Librerías de instrumentación para Express:
-    npm install --save @opentelemetry/instrumentation-http @opentelemetry/instrumentation-express
-
 La configuración de la instrumentación debe ejecutarse antes del código de la aplicación.
+Package.json:
+    "start": "node -r ./otel-tracing.js ./bin/www"
 
-Crear un archivo instrumentation.ts
+Crear un archivo otel-tracing.js
 
     // Require dependencies
     const { NodeSDK } = require('@opentelemetry/sdk-node');
@@ -113,8 +113,28 @@ Crear un archivo instrumentation.ts
 
     sdk.start();
 
+### K8s OTEL Operator
+No es necesario instalar librerías
+otel-instrumentation.yaml
 
-##Próximos pasos:
+    apiVersion: opentelemetry.io/v1alpha1
+    kind: Instrumentation
+    metadata:
+    name: pc-instrumentation
+    spec:
+    exporter:
+        endpoint: http://otel-collector.opentelemetry-operator-system:4317
+    propagators:
+        - tracecontext
+        - baggage
+        - b3
+    sampler:
+        type: parentbased_traceidratio
+        #0.25
+        argument: "1" 
+
+
+## Próximos pasos:
 # Debug trazas
 
 kubectl apply -f instrumentation.yaml

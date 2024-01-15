@@ -18,18 +18,17 @@ spec:
         app.kubernetes.io/build-version: "2.1"
       annotations:
         instrumentation.opentelemetry.io/inject-nodejs: "true"
-        #metrics.dynatrace.com/scrape: 'true'
-        #metrics.dynatrace.com/path: '/metrics'
-        #metrics.dynatrace.com/port: '3000'
-        #metrics.dynatrace.com/secure: 'false'
-        #metrics.dynatrace.com/filter: |
-        #  {
-        #    "mode": "include",
-        #    "names": [
-        #        "tiendapc_number_of_hit_total*",
-        #        "tiendapc_process_heap_bytes"
-        #        ]
-        #  }
+        metrics.dynatrace.com/scrape: 'true'
+        metrics.dynatrace.com/path: '/metrics'
+        metrics.dynatrace.com/port: '3000'
+        metrics.dynatrace.com/secure: 'false'
+        metrics.dynatrace.com/filter: |
+          {
+            "mode": "include",
+            "names": [
+                "tiendapc_nodejs_active_handles",
+                ]
+          }
     spec:
       containers:
         - name: tiendapc
