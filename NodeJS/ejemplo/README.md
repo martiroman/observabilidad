@@ -1,3 +1,12 @@
+express --view=jade ejemplo
+
+npm install
+npm install jsonwebtoken
+npm install mongoose
+npm install bcrypt
+
+DEBUG=ejemplo:* npm start
+
 ### Construir imagen:
 
 > docker build -t tiendapc:latest .
