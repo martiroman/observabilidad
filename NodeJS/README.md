@@ -11,10 +11,6 @@ En este ejemplo veremos cómo recopilar información en una aplicación NodeJS p
 
 ### 1. Métricas 
 
-Time Series
-
-Es una secuencia de data points numéricos con un orden temporal 
-
 #### Prometheus: Librería Prom-Client
 
 Las librerías de cliente de [Prometheus](https://prometheus.io/) permiten instrumentar en nuestro código las difiniciones y exposición de las métricas para distintos lenguajes de programación.
