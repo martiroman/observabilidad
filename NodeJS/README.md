@@ -2,11 +2,12 @@
 ## Observabilidad en NodeJS
 La adopción de observabilidad en software proporciona múltiples ventajas incluyendo una mejor capacidad para resolver problemas y una disminución en el tiempo de respuesta frente a incidentes en producción, también es fundamental su implementación en pipelines de CI/CD dado su creciente complejidad.
 
-En este ejemplo veremos cómo recopilar información en una aplicación NodeJS para cada uno de los pilares de la observabilidad:
+En este ejemplo veremos cómo recopilar información en una aplicación NodeJS para cada uno de los pilares de la observabilidad utilizando herramientas Open Source:
 
-1. Métricas: datos cuantitativos sobre el rendimiento del sistema 
-2. Logs: eventos y acciones que ocurren en el sistema
-3. Trazas: información sobre el recorrido de los requests
+1. Métricas con Prometheus: datos cuantitativos sobre el rendimiento del sistema 
+2. Trazas con OpenTelemetry: información sobre el recorrido de los requests
+2. Logs con FluentBit: eventos y acciones que ocurren en el sistema
+
 
 
 ### 1. Métricas 
@@ -15,7 +16,7 @@ En este ejemplo veremos cómo recopilar información en una aplicación NodeJS p
 
 Las librerías de cliente de [Prometheus](https://prometheus.io/) permiten instrumentar en nuestro código las difiniciones y exposición de las métricas para distintos lenguajes de programación.
 
-Instalar librerias "prom-client" para NodeJS 
+Instalar librerias "prom-client" para NodeJS en nuestro proyecto NodeJS
 https://prometheus.io/docs/instrumenting/clientlibs/
 
     > npm install prom-client --save
@@ -47,9 +48,8 @@ Exponer las métricas
 
     });
 
-Counters
-
-Definir una métrica custom de tipo contador:
+La librería prom-client permite definir métricad custom. 
+Ejemplo de una métrica Counter:
 
     const hitscounter = new prom.Counter({
         name: 'miapp_number_of_hits_total',
