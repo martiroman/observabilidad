@@ -151,14 +151,3 @@ Enrich your instrumentation generated automatically with manual instrumentation 
 
 ### 3. Logs
 
-
-
-#### Construir imagen:
-
-    docker build -t miapp:latest .
-
-    docker login -u [nombre_usuario]
-
-    docker tag miapp [nombre_usuario]/miapp
-
-    docker push [nombre_usuario]/miapp
