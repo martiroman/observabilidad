@@ -48,6 +48,8 @@ Exponer las métricas
 
     });
 
+
+
 La librería prom-client permite definir métricad custom. 
 Ejemplo de una métrica Counter:
 
@@ -58,6 +60,7 @@ Ejemplo de una métrica Counter:
 
 
 #### Dynatrace: Cómo colectar métricas de Prometheus
+https://docs.dynatrace.com/docs/shortlink/monitor-prometheus-metrics
 
 El operador de Kubernetes incluye una función para colectar métricas de Prometheus en Dynatrace. De esta manera podremos construir SLO, dashboards y detectar anomalías con los datos obtenidos a través de las métricas de Prometheus.
 
@@ -76,11 +79,17 @@ Para habilitar esta función simplemente deberemos incluir las anotaciones en nu
                 ]
           }
 
+En Dynatrace, ir a la página de configuración del Kubernetes cluster y habilitar:
+
+    Monitor annotated Prometheus exporters
+
+
+
 ### 2. Trazas
 
-Alternativas:
+Alternativas con Opentelemetry:
 
-### Instrumentación de Opentelemetry
+#### Instrumentación de Opentelemetry
 
 https://opentelemetry.io/
 
@@ -113,9 +122,10 @@ Crear un archivo otel-tracing.js
 
     sdk.start();
 
-### K8s OTEL Operator
+#### K8s OTEL Operator
 No es necesario instalar librerías
-otel-instrumentation.yaml
+
+Crear el recurso otel-instrumentation.yaml
 
     apiVersion: opentelemetry.io/v1alpha1
     kind: Instrumentation
@@ -134,19 +144,19 @@ otel-instrumentation.yaml
         argument: "1" 
 
 
-## Próximos pasos:
-# Debug trazas
 
-kubectl apply -f instrumentation.yaml
+#### Enviar trazas a dynatrace
 
-kubectl get instrumentation -n test-nodejs-app
+Si tenemos OneAgent simplemente habilitamos el feature de Opentelemetry para NodeJS:
+    Settings -> Preference -> OneAgent features: OpenTelemetry (Node.js)
 
-kubectl get events -n test-nodejs-app
+Una alternativa es enviar las trazas a un colector OTEL y utilizar el exporter para ingestarlas
 
-#
-Enrich your instrumentation generated automatically with manual instrumentation of your own codebase. This gets you customized observability data.
-
-## Send to dynatrace
+exporters:
+  otlphttp:
+    endpoint: "https://<YOUR-ENVIRONMENT-STRING>.live.dynatrace.com/api/v2/otlp"
+    headers:
+      Authorization: "Api-Token <YOUR-DYNATRACE-API-KEY>" 
 
 
 ### 3. Logs
