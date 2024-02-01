@@ -9,6 +9,13 @@ pipeline {
     }
 
     stages {
+        stage('Debug') {
+            steps {
+                script {
+                    echo "Clonando desde: https://github.com/martiroman/observabilidad.git en la rama main"
+                }
+            }
+        }
         stage('build') {
             steps {
                 script {
