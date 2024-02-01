@@ -5,32 +5,35 @@ pipeline {
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials-id')
         IMAGE_NAME = 'tiendapc'
         APP_DIR = 'NodeJS/ejemplo'
-        REPO_URL = 'https://github.com/martiroman/observabilidad.git'
     }
 
     stages {
         stage('Debug') {
             steps {
                 script {
-                    echo "Clonando desde: $REPO_URL en la rama main"
+                    echo "Clonando desde: https://github.com/martiroman/observabilidad.git en la rama main"
                 }
             }
         }
 
-        stage('Build') {
+        stage('Build and Push to Docker Hub') {
             steps {
                 script {
-                    checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: REPO_URL]]])
+                    // Agrega la ruta de Docker al PATH
+                    sh 'export PATH=$PATH:/usr/bin'
+
+                    checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'https://github.com/martiroman/observabilidad.git']]])
 
                     // Cambiar al subdirectorio
                     dir(APP_DIR) {
                         // Construir la imagen Docker
-                        docker.build(IMAGE_NAME)
-
+                        sh 'docker build -t $IMAGE_NAME .'
+    
                         // Iniciar sesión en Docker Hub y realizar acciones después de iniciar sesión
                         docker.withRegistry('https://registry.hub.docker.com', DOCKER_HUB_CREDENTIALS) {
                             // Etiquetar la imagen y enviarla a Docker Hub
-                            docker.image(IMAGE_NAME).push()
+                            sh 'docker tag $IMAGE_NAME:latest $DOCKER_HUB_USERNAME/$IMAGE_NAME:latest'
+                            sh 'docker push $DOCKER_HUB_USERNAME/$IMAGE_NAME:latest'
                         }
                     }
                 }
