@@ -1,19 +1,30 @@
 pipeline {
     agent any
+
+    environment {
+        // Define las variables de entorno necesarias
+        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials-id')
+        IMAGE_NAME = 'tiendapc'
+        APP_DIR = 'NodeJS/ejemplo' // Ruta al directorio de la aplicación dentro del repositorio
+    }
+
     stages {
-        stage("Build") {
+        stage('build') {
             steps {
-                echo "Building the app..."
-            }
-        }
-        stage("Test") {
-            steps {
-                echo "Testing the app..."
-            }
-        }
-        stage("Deploy") {
-            steps {
-                echo "Deploying the app..."
+                script {
+                    // Clonar el repositorio de GitHub
+                    git 'https://github.com/martiroman/observabilidad.git'
+                    dir(APP_DIR) {
+                        // Construir la imagen Docker
+                        docker.build(IMAGE_NAME)
+    
+                        // Iniciar sesión en Docker Hub y realizar acciones después de iniciar sesión
+                        docker.withRegistry('https://registry.hub.docker.com', DOCKER_HUB_CREDENTIALS) {
+                            // Etiquetar la imagen y enviarla a Docker Hub
+                            docker.image(IMAGE_NAME).push()
+                        }
+                    }
+                }
             }
         }
     }
