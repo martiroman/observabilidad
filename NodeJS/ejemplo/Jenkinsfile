@@ -20,7 +20,9 @@ pipeline {
             steps {
                 script {
                     // Clonar el repositorio de GitHub
-                    git 'https://github.com/martiroman/observabilidad.git'
+                    checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/martiroman/observabilidad.git']]])
+
+    // Cambiar al subdirectorio
                     dir(APP_DIR) {
                         // Construir la imagen Docker
                         docker.build(IMAGE_NAME)
