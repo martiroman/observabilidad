@@ -19,9 +19,6 @@ pipeline {
         stage('Build and Push to Docker Hub') {
             steps {
                 script {
-                    // Agrega la ruta de Docker al PATH
-                    sh 'export PATH=$PATH:/usr/bin'
-
                     checkout([$class: 'GitSCM', branches: [[name: 'main']], userRemoteConfigs: [[url: 'https://github.com/martiroman/observabilidad.git']]])
 
                     // Cambiar al subdirectorio
@@ -30,10 +27,10 @@ pipeline {
                         sh 'docker build -t $IMAGE_NAME .'
     
                         // Iniciar sesión en Docker Hub y realizar acciones después de iniciar sesión
-                        docker.withRegistry('https://registry.hub.docker.com', DOCKER_HUB_CREDENTIALS) {
-                            // Etiquetar la imagen y enviarla a Docker Hub
-                            sh 'docker tag $IMAGE_NAME:latest $DOCKER_HUB_USERNAME/$IMAGE_NAME:latest'
-                            sh 'docker push $DOCKER_HUB_USERNAME/$IMAGE_NAME:latest'
+                        withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials-id', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                            sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD"
+                            sh "docker tag $IMAGE_NAME:latest $DOCKER_USERNAME/$IMAGE_NAME:latest"
+                            sh "docker push $DOCKER_USERNAME/$IMAGE_NAME:latest"
                         }
                     }
                 }
