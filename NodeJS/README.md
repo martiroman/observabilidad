@@ -180,25 +180,27 @@ Funciona como un pipeline con los siguientes pasos:
                         --> output N
 
 #### 3.1 Input
-En este ejemplo leemos los mensajes escritos en la salida estandar.
 
     [INPUT]
-        Name         stdin
-        Parser       docker
-        Tag          k8s.*
+        Name              tail
+        Tag               kube.*
+        Path              /var/log/containers/tiendapc*.log
+        Parser            docker
+        DB                /run/fluent-bit/flb_kube.db
+        Mem_Buf_Limit     5MB
+        Buffer_Chunk_size 32k
+        Buffer_Max_size   32k
+
 
 #### 3.2 Filter
-Filtramos solo el namesapace que nos interesa
 
     [FILTER]
-        Name         kubernetes
-        Match        k8s.*
-        Kube_Tag_Prefix kube.var.log.containers
-        Kube_URL      https://kubernetes.default.svc:443
-        Kube_CA_File  /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-        Kube_Token_File /var/run/secrets/kubernetes.io/serviceaccount/token
-        Kube_Format   json
-        Kube_Namespace your-namespace  # Reemplaza "your-namespace" con el nombre de tu namespace
+        Name           kubernetes
+        Match          tiendapc.*
+        Kube_URL       https://kubernetes.default.svc:443
+        Merge_Log On
+        K8S-Logging.Exclude Off
+        K8S-Logging.Parser Off
 
 
 #### 3.3 Output
