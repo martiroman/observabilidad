@@ -1,6 +1,6 @@
 
 ## Observabilidad en NodeJS
-La adopción de observabilidad en software proporciona múltiples ventajas incluyendo una mejor capacidad para resolver problemas y una disminución en el tiempo de respuesta frente a incidentes en producción, también es fundamental su implementación en pipelines de CI/CD dado su creciente complejidad.
+La adopción de observabilidad en software proporciona múltiples ventajas incluyendo una mejor capacidad para resolver problemas y una disminución en el tiempo de respuesta frente a incidentes en producción. También es fundamental su implementación en pipelines de CI/CD dado su creciente complejidad.
 
 En este ejemplo veremos cómo recopilar información en una aplicación NodeJS para cada uno de los pilares de la observabilidad utilizando herramientas Open Source:
 
@@ -12,7 +12,7 @@ En este ejemplo veremos cómo recopilar información en una aplicación NodeJS p
 
 ### 1. Métricas 
 
-#### Prometheus: Librería Prom-Client
+#### 1.1 Prometheus: Librería Prom-Client
 
 Las librerías de cliente de [Prometheus](https://prometheus.io/) permiten instrumentar en nuestro código las difiniciones y exposición de las métricas para distintos lenguajes de programación.
 
@@ -50,7 +50,7 @@ Exponer las métricas
 
 
 
-La librería prom-client permite definir métricad custom. 
+La librería prom-client permite definir métricas custom. 
 Ejemplo de una métrica Counter:
 
     const hitscounter = new prom.Counter({
@@ -59,7 +59,7 @@ Ejemplo de una métrica Counter:
     });
 
 
-#### Dynatrace: Cómo colectar métricas de Prometheus
+#### 1.2 Dynatrace: Cómo colectar métricas de Prometheus
 https://docs.dynatrace.com/docs/shortlink/monitor-prometheus-metrics
 
 El operador de Kubernetes incluye una función para colectar métricas de Prometheus en Dynatrace. De esta manera podremos construir SLO, dashboards y detectar anomalías con los datos obtenidos a través de las métricas de Prometheus.
@@ -89,7 +89,7 @@ En Dynatrace, ir a la página de configuración del Kubernetes cluster y habilit
 
 Alternativas con Opentelemetry:
 
-#### Instrumentación de Opentelemetry
+#### 2.1 Instrumentación de Opentelemetry
 
 https://opentelemetry.io/
 
@@ -122,10 +122,12 @@ Crear un archivo otel-tracing.js
 
     sdk.start();
 
-#### K8s OTEL Operator
-No es necesario instalar librerías
+#### 2.2 K8s OTEL Operator
+https://opentelemetry.io/docs/kubernetes/operator/
 
-Crear el recurso otel-instrumentation.yaml
+No es necesario instalar librerías.
+
+Crear el recurso otel-instrumentation.yaml en el namespace. 
 
     apiVersion: opentelemetry.io/v1alpha1
     kind: Instrumentation
@@ -140,12 +142,16 @@ Crear el recurso otel-instrumentation.yaml
         - b3
     sampler:
         type: parentbased_traceidratio
-        #0.25
         argument: "1" 
 
+Agregar la anotación en el pod:
+
+    annotations:
+            instrumentation.opentelemetry.io/inject-nodejs: "true"
 
 
-#### Enviar trazas a dynatrace
+
+#### 2.3 Dynatrace: Colectar trazas
 
 Si tenemos OneAgent simplemente habilitamos el feature de Opentelemetry para NodeJS:
     Settings -> Preference -> OneAgent features: OpenTelemetry (Node.js)
@@ -161,3 +167,55 @@ exporters:
 
 ### 3. Logs
 
+[FluentBit](https://docs.fluentbit.io/) provee plugins para obtener información de distintas fuentes, parsar, filtrar y enviar a diversos destinos.
+Funciona como un pipeline con los siguientes pasos:
+
+    input 
+        --> parser 
+            --> filter 
+                --> buffer 
+                    --> routing
+                        --> output 1
+                        ...
+                        --> output N
+
+#### 3.1 Input
+En este ejemplo leemos los mensajes escritos en la salida estandar.
+
+    [INPUT]
+        Name         stdin
+        Parser       docker
+        Tag          k8s.*
+
+#### 3.2 Filter
+Filtramos solo el namesapace que nos interesa
+
+    [FILTER]
+        Name         kubernetes
+        Match        k8s.*
+        Kube_Tag_Prefix kube.var.log.containers
+        Kube_URL      https://kubernetes.default.svc:443
+        Kube_CA_File  /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        Kube_Token_File /var/run/secrets/kubernetes.io/serviceaccount/token
+        Kube_Format   json
+        Kube_Namespace your-namespace  # Reemplaza "your-namespace" con el nombre de tu namespace
+
+
+#### 3.3 Output
+El plugin "http output" de FluentBit nos permite enviar los logs al endpoint para la ingesta de Dynatrace:
+https://docs.dynatrace.com/docs/shortlink/lma-stream-logs-with-fluent-bit
+
+    [OUTPUT]
+        name  http
+        match *
+        header Content-Type application/json; charset=utf-8
+        header Authorization Api-Token {your-API-token-here}
+        allow_duplicated_headers false
+        host  {your-environment-id}.live.dynatrace.com
+        Port  443
+        URI   /api/v2/logs/ingest
+        Format json
+        json_date_format iso8601
+        json_date_key timestamp
+        tls On
+        tls.verify Off

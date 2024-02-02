@@ -1,7 +1,9 @@
 var express = require('express');
+const logger = require('../logger');
 var router = express.Router();
 
 router.get('/', function(req, res, next) {
+  logger.info('GET / Home hit');
   res.render('index', { title: 'Tienda - PowerCloud' });
 });
 

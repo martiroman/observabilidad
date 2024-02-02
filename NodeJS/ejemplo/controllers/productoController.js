@@ -1,4 +1,5 @@
 const ProductoModel = require("../models/productoModel");
+const logger = require('../logger');
 
 // OPENTELEMETRY
 //1. Obtain a reference to the OpenTelemetry API.
@@ -25,8 +26,10 @@ const getAll = async function (req, res, next) {
     })
     .sort({ codigo: -1 })    
     res.status(200).json(documents);
+    logger.info("Productos - getAll");
   } 
   catch (e) {
+    logger.error(e);
     next(e);
   }
   //finally {
@@ -39,8 +42,10 @@ const getById = async function (req, res, next) {
   try {
     const document = await ProductoModel.findById(req.params.id);
     res.status(200).json(document);
+    logger.info("Productos - getById");
   } 
   catch (e) {
+    logger.error(e);
     next(e);
   }
 };
@@ -51,8 +56,10 @@ const add = async function (req, res, next) {
     const document = await product.save();
 
     res.status(201).json(document);
+    logger.info("Productos - add");
   } 
   catch (e) {
+    logger.error(e);
     next(e);
   }
 };
@@ -61,8 +68,10 @@ const update = async function (req, res, next) {
   try {
     await ProductoModel.updateOne({ _id: req.params.id }, req.body);
     res.status(204).json();
+    logger.info("Productos - update");
   } 
   catch (e) {
+    logger.error(e);
     next(e);
   }
 };
@@ -71,8 +80,10 @@ const del = async function (req, res, next) {
   try {
     await ProductoModel.deleteOne({ _id: req.params.id });
     res.status(204).json();
+    logger.info("Productos - del");
   } 
   catch (e) {
+    logger.error(e);
     next(e);
   }
 };
