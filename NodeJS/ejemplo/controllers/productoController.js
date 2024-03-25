@@ -17,10 +17,10 @@ const requestCounter = meter.createCounter('request_counter', {
 const getAll = async function (req, res, next) {
   //OPENTELEMETRY
   //3. With tracer, we can use a span builder to create and start new spans.
+const span = tracer.startSpan('Call to /getAll');
+span.setAttribute('accion', 'GetAll');
 
   try {
-    const span = tracer.startSpan('Call to /getAll');
-    span.setAttribute('accion', 'GetAll');
     requestCounter.add(1, { 'action.type': 'create' });
     const documents = await ProductoModel.find()
     .populate({
