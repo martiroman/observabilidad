@@ -22,13 +22,13 @@ spec:
         metrics.dynatrace.com/path: '/metrics'
         metrics.dynatrace.com/port: '3000'
         metrics.dynatrace.com/secure: 'false'
-        metrics.dynatrace.com/filter: |
-          {
-            "mode": "include",
-            "names": [
-                "tiendapc_nodejs_active_handles"
-                ]
-          }
+        #metrics.dynatrace.com/filter: |
+        #  {
+        #    "mode": "include",
+        #    "names": [
+        #        "tiendapc_nodejs_active_handles"
+        #        ]
+        #  }
     spec:
       containers:
         - name: tiendapc
