@@ -106,7 +106,7 @@ La configuración de la instrumentación debe ejecutarse antes del código de la
 Package.json:
     "start": "node -r ./otel-tracing.js ./bin/www"
 
-Crear un archivo otel-tracing.js
+Crear un archivo otel-tracing.js (Solo para el caso de no utilizar autoinstrumentación)
 
     // Require dependencies
     const { NodeSDK } = require('@opentelemetry/sdk-node');
