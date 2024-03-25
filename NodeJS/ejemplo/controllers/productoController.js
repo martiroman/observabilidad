@@ -3,22 +3,25 @@ const logger = require('../logger');
 
 // OPENTELEMETRY
 //1. Obtain a reference to the OpenTelemetry API.
-//const opentelemetry = require("@opentelemetry/api")
+const opentelemetry = require("@opentelemetry/api")
 
 // OPENTELEMETRY
 //2. Now we can get a tracer object.
-//const tracer = opentelemetry.trace.getTracer('Productos')
+const tracer = opentelemetry.trace.getTracer('Productos')
+const meter = opentelemetry.metrics.getMeter('Invocaciones')
 
+const requestCounter = meter.createCounter('request_counter', {
+  description: 'Cantidad Recibidas'
+});
 
 const getAll = async function (req, res, next) {
   //OPENTELEMETRY
   //3. With tracer, we can use a span builder to create and start new spans.
-//  const span = tracer.startSpan('Call to /getAll');
-//  span.setAttribute('http.method', 'GET');
- // span.setAttribute('net.protocol.version','1.1');
 
   try {
-    
+    const span = tracer.startSpan('Call to /getAll');
+    span.setAttribute('accion', 'GetAll');
+    requestCounter.add(1, { 'action.type': 'create' });
     const documents = await ProductoModel.find()
     .populate({
       path: "categoria",
@@ -32,10 +35,9 @@ const getAll = async function (req, res, next) {
     logger.error(e);
     next(e);
   }
-  //finally {
-    //span.end();
-
-  //}
+  finally {
+    span.end();
+  }
 };
 
 const getById = async function (req, res, next) {
