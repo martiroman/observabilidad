@@ -18,10 +18,10 @@ spec:
         app.kubernetes.io/build-version: "2.4"
       annotations:
         instrumentation.opentelemetry.io/inject-nodejs: "true"
-        metrics.dynatrace.com/scrape: 'true'
-        metrics.dynatrace.com/path: '/metrics'
-        metrics.dynatrace.com/port: '3000'
-        metrics.dynatrace.com/secure: 'false'
+        #metrics.dynatrace.com/scrape: 'true'
+        #metrics.dynatrace.com/path: '/metrics'
+        #metrics.dynatrace.com/port: '3000'
+        #metrics.dynatrace.com/secure: 'false'
         #metrics.dynatrace.com/filter: |
         #  {
         #    "mode": "include",
