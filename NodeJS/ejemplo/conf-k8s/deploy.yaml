@@ -14,8 +14,8 @@ spec:
         app.kubernetes.io/name: tiendapc
         app.kubernetes.io/component: service
         app.kubernetes.io/part-of: tiendapc
-        app.kubernetes.io/version: 0.0.37
-        app.kubernetes.io/build-version: "2.2"
+        app.kubernetes.io/version: 0.0.38
+        app.kubernetes.io/build-version: "2.3"
       annotations:
         instrumentation.opentelemetry.io/inject-nodejs: "true"
         metrics.dynatrace.com/scrape: 'true'
