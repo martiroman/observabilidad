@@ -8,17 +8,16 @@ const opentelemetry = require("@opentelemetry/api")
 // OPENTELEMETRY
 //2. Now we can get a tracer object.
 const tracer = opentelemetry.trace.getTracer('Productos')
-const meter = opentelemetry.metrics.getMeter('Invocaciones')
-const requestCounter = meter.createCounter('request_counter', {
-  description: 'Cantidad Recibidas'
-});
+const meter = opentelemetry.metrics.getMeter('invocaciones')
+const counter = meter.createCounter('request_counter');
 const getAll = async function (req, res, next) {
   //OPENTELEMETRY
   //3. With tracer, we can use a span builder to create and start new spans.
 const span = tracer.startSpan('Call to /getAll');
 span.setAttribute('accion', 'GetAll');
-requestCounter.add(1, { 'action.type': 'create' });
-logger.info(requestCounter);
+counter.add(1);
+logger.info(counter);
+logger.info(meter);
   try {
     const documents = await ProductoModel.find()
     .populate({
