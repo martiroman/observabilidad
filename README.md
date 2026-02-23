@@ -1,5 +1,35 @@
-#### Notas, apuntes y ejemplos sobre Observabilidad, CI/CD y mas 
+express --view=jade ejemplo
 
-* [Observabilidad en NodeJS](https://github.com/martiroman/observabilidad/tree/main/NodeJS): Obtención de métricas, trazas y logs en una aplicación NodeJS.
+    npm install
+    npm install jsonwebtoken
+    npm install mongoose
+    npm install bcrypt
 
-* [Timeseries Forecasting](https://github.com/martiroman/Timeseries-Forecasting/): Forecasting de métricas de Prometheus utilizando Python. Alertado y visualización en Grafana.
+DEBUG=ejemplo:* npm start
+
+
+### Logs
+    > npm install winston
+
+
+    const winston = require('winston');
+
+    const logger = winston.createLogger({
+    format: winston.format.simple(),
+    transports: [
+        new winston.transports.Console(),
+    ],
+    });
+
+    logger.info('Hello, Fluent Bit!');
+
+### Construir imagen:
+
+> docker build -t tiendapc:latest .
+
+> docker login -u [nombre_usuario]
+
+> docker tag tiendapc mnroman/tiendapc 
+
+> docker push [nombre_usuario]/tiendapc
+
